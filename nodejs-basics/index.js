@@ -1,17 +1,39 @@
-const http = require('http');
+const http = require("http");
 
-const server =  http.createServer((req, res) => {
-  console.log(req.url);
-  res.write('<h1>Hello from NodeJS</h1>');
-  res.write('<h2>Hello from NodeJS</h2>');
-  res.write('<h3>Hello from NodeJS</h3>');
-  res.end(`
-    <div style="background: red; width: 200px; height: 200px">
-      <h1>Test 1</h1>
-    </div>
-  `);
+const server = http.createServer((req, res) => {
+  
+  if (req.method === "GET") {
+    res.writeHead(200, {
+      "Content-type": "text/html",
+    });
+
+    res.end(`
+      <h1>Form</h1>
+      <form method="post" action="/">
+        <input type="text" name="title" />
+        <button type="submit">Send</button>
+      </form>
+    `);
+  } else if (req.method === "POST") {
+    const body = [];
+    res.writeHead(200, {
+      "Content-type": "text/html; charset=utf-8"
+    })
+
+    req.on("data", (data) => {
+      body.push(Buffer.from(data));
+    });
+
+    req.on("end", () => {
+      const message = body.toString().split("=")[1];
+
+      res.end(`
+        <h1>Ваше сообщение: ${message}</h1>
+      `);
+    });
+  }
 });
 
 server.listen(3000, () => {
-  console.log('Server is runing...');
+  console.log("Server is runing...");
 });
