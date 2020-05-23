@@ -17,4 +17,4 @@ logger.on('message', data => {
 logger.log('Hello')
 logger.log('Hello')
 logger.log('Hello')
-logger.log('Hello')``
+logger.log('Hello')
