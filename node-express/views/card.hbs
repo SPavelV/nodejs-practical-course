@@ -26,6 +26,10 @@
 
   <p><strong>Цена: </strong><span class="price">{{price}}</span></p>
 
+  <form action="/orders" method="POST">
+    <button class="btn">Сделать заказ</button>
+  </form>
+
 {{else}}
 {{/if}}
 </div>
