@@ -10,7 +10,31 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  res.redirect("/orders");
+  try {
+    const user = await req.user.populate("cart.items.courseId").execPopulate();
+
+    console.log("items",  user.cart);
+
+    const courses = user.cart.itmes.map((i) => ({
+      count: i.count,
+      course: { ...i.courseId._doc },
+    }));
+
+    const order = new Order({
+      user: {
+        name: req.user.name,
+        userId: req.user,
+      },
+      courses,
+    });
+
+    await order.save();
+    await req.user.crearCart();
+
+    res.redirect("/orders");
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 module.exports = router;

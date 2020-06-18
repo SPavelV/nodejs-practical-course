@@ -62,4 +62,10 @@ userSchema.methods.removeFromCart = function (id) {
   return this.save();
 };
 
+userSchema.crearCart = function() {
+  this.cart = {items: []}
+
+  return this.save();
+}
+
 module.exports = model("User", userSchema);
