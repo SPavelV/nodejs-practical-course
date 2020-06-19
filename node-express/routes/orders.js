@@ -13,9 +13,7 @@ router.post("/", async (req, res) => {
   try {
     const user = await req.user.populate("cart.items.courseId").execPopulate();
 
-    console.log("items",  user.cart);
-
-    const courses = user.cart.itmes.map((i) => ({
+    const courses = user.cart.items.map((i) => ({
       count: i.count,
       course: { ...i.courseId._doc },
     }));
@@ -25,11 +23,11 @@ router.post("/", async (req, res) => {
         name: req.user.name,
         userId: req.user,
       },
-      courses,
+      courses
     });
 
     await order.save();
-    await req.user.crearCart();
+    await req.user.clearCart();
 
     res.redirect("/orders");
   } catch (error) {
