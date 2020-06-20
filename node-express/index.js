@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
 const Handlebars = require("handlebars");
+const session = require("express-session");
 const exphbs = require("express-handlebars");
 const {
   allowInsecurePrototypeAccess,
@@ -13,6 +14,7 @@ const ordersRoutes = require("./routes/orders");
 const coursesRoutes = require("./routes/courses");
 const authRoutes = require("./routes/auth");
 const User = require("./models/user");
+const varMiddleWare = require("./middleware/variables");
 
 const app = express();
 
@@ -38,6 +40,12 @@ app.use(async (req, res, next) => {
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: "some secret value",
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(varMiddleWare);
 
 app.use("/", homeRoutes);
 app.use("/add", addRoutes);
