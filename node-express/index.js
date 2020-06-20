@@ -28,16 +28,6 @@ app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 app.set("views", "views");
 
-app.use(async (req, res, next) => {
-  try {
-    const user = await User.findById("5edb5aee98ab364b5cc4ca98");
-    req.user = user;
-    next();
-  } catch (e) {
-    console.log(e);
-  }
-});
-
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -66,16 +56,16 @@ async function start() {
     });
     // await mongoose.connect(url, {useUnifiedTopology: true});
 
-    const candidate = await User.findOne();
-    if (!candidate) {
-      const user = new User({
-        email: "pablo@gmail.com",
-        name: "Pablo",
-        cart: { items: [] },
-      });
+    // const candidate = await User.findOne();
+    // if (!candidate) {
+    //   const user = new User({
+    //     email: "pablo@gmail.com",
+    //     name: "Pablo",
+    //     cart: { items: [] },
+    //   });
 
-      await user.save();
-    }
+    //   await user.save();
+    // }
 
     app.listen(PORT, () => {
       console.log(`Server is runing on port ${PORT}`);
