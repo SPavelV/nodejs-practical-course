@@ -3,6 +3,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const Handlebars = require("handlebars");
 const session = require("express-session");
+const MongoStore = require("connect-mongodb-session")(session);
 const exphbs = require("express-handlebars");
 const {
   allowInsecurePrototypeAccess,
@@ -16,12 +17,17 @@ const authRoutes = require("./routes/auth");
 const User = require("./models/user");
 const varMiddleWare = require("./middleware/variables");
 
+const MONGODB_URI = "mongodb+srv://pavel:qbvQUmUy0744LTaV@cluster0-ximsm.mongodb.net/shop";
 const app = express();
-
 const hbs = exphbs.create({
   handlebars: allowInsecurePrototypeAccess(Handlebars),
   defaultLayout: "main",
   extname: "hbs",
+});
+
+const store = new MongoStore({
+  collection: "sessions",
+  uri: MONGODB_URI
 });
 
 app.engine("hbs", hbs.engine);
@@ -33,7 +39,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: "some secret value",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store
 }));
 app.use(varMiddleWare);
 
@@ -48,24 +55,10 @@ const PORT = process.env.PORT || 3000;
 
 async function start() {
   try {
-    const url =
-      "mongodb+srv://pavel:qbvQUmUy0744LTaV@cluster0-ximsm.mongodb.net/shop";
-    await mongoose.connect(url, {
+    await mongoose.connect(MONGODB_URI, {
       useNewUrlParser: true,
       useFindAndModify: false,
     });
-    // await mongoose.connect(url, {useUnifiedTopology: true});
-
-    // const candidate = await User.findOne();
-    // if (!candidate) {
-    //   const user = new User({
-    //     email: "pablo@gmail.com",
-    //     name: "Pablo",
-    //     cart: { items: [] },
-    //   });
-
-    //   await user.save();
-    // }
 
     app.listen(PORT, () => {
       console.log(`Server is runing on port ${PORT}`);
