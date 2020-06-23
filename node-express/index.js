@@ -16,6 +16,7 @@ const coursesRoutes = require("./routes/courses");
 const authRoutes = require("./routes/auth");
 const User = require("./models/user");
 const varMiddleWare = require("./middleware/variables");
+const userMiddleWare = require("./middleware/user");
 
 const MONGODB_URI = "mongodb+srv://pavel:qbvQUmUy0744LTaV@cluster0-ximsm.mongodb.net/shop";
 const app = express();
@@ -43,6 +44,7 @@ app.use(session({
   store
 }));
 app.use(varMiddleWare);
+app.use(userMiddleWare);
 
 app.use("/", homeRoutes);
 app.use("/add", addRoutes);
