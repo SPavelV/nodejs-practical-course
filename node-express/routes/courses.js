@@ -30,7 +30,6 @@ router.post("/edit", auth, async (req, res) => {
   const { id } = req.body;
   delete req.body.id;
   await Course.findByIdAndUpdate(id, req.body);
-  sds;
   res.redirect("/courses");
 });
 
