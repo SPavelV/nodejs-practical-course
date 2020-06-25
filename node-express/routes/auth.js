@@ -16,16 +16,31 @@ router.get("/logout", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const user = await User.findById("5edb5aee98ab364b5cc4ca98");
-  req.session.user = user;
-  req.session.isAuthenticated = true;
+  try {
+    const { email, password } = req.body;
+    const candidate = await User.findOne({ email });
 
-  req.session.save((err) => {
-    if (err) {
-      throw err;
+    if (candidate) {
+      const areSame = password === candidate.password;
+
+      if (areSame) {
+        req.session.user = candidate;
+        req.session.isAuthenticated = true;
+        req.session.save((err) => {
+          if (err) {
+            throw err;
+          }
+          res.redirect("/");
+        });
+      } else {
+        res.redirect("/auth/login#login");
+      }
+    } else {
+      res.redirect("/auth/login#login");
     }
-    res.redirect("/");
-  });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 router.post("/register", async (req, res) => {
@@ -40,7 +55,7 @@ router.post("/register", async (req, res) => {
         email,
         name,
         password,
-        cart: {items: []}
+        cart: { items: [] },
       });
       await user.save();
       res.redirect("/auth/login#login");
