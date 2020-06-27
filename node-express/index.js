@@ -20,8 +20,6 @@ const varMiddleWare = require("./middleware/variables");
 const userMiddleWare = require("./middleware/user");
 const keys = require("./keys");
 
-const PORT = process.env.PORT || 3000;
-
 const app = express();
 const hbs = exphbs.create({
   handlebars: allowInsecurePrototypeAccess(Handlebars),
@@ -57,6 +55,8 @@ app.use("/courses", coursesRoutes);
 app.use("/card", cardRoutes);
 app.use("/orders", ordersRoutes);
 app.use("/auth", authRoutes);
+
+const PORT = process.env.PORT || 3000;
 
 async function start() {
   try {
