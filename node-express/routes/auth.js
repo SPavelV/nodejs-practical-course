@@ -9,16 +9,18 @@ const regEmail = require("../emails/registration");
 const resetEmail = require("../emails/reset");
 const router = Router();
 
-const transporter = nodemailer.createTransport(sendgrid({
-  auth: {api_key: keys.SENDGRID_API_KEY}
-}))
+const transporter = nodemailer.createTransport(
+  sendgrid({
+    auth: { api_key: keys.SENDGRID_API_KEY },
+  })
+);
 
 router.get("/login", async (req, res) => {
   res.render("auth/login", {
     title: "Авторизация",
     isLogin: true,
     loginError: req.flash("loginError"),
-    registerError: req.flash("registerError")
+    registerError: req.flash("registerError"),
   });
 });
 
@@ -86,20 +88,46 @@ router.post("/register", async (req, res) => {
 router.get("/reset", (req, res) => {
   res.render("auth/reset", {
     title: "Забыли пароль?",
-    error: req.flash("error")
-  })
+    error: req.flash("error"),
+  });
+});
+
+router.get("/password/:token", async (req, res) => {
+  if (!req.params.token) {
+    return res.redirect("/auth/login");
+  }
+
+  try {
+    const user = await User.findOne({
+      resetToken: req.params.token,
+      resetTokenExp: { $gt: Date.now() },
+    });
+    
+    if(!user) {
+      return res.redirect("/auth/login");
+    } else {  
+      res.render("auth/password", {
+        title: "Восстановить доступ",
+        error: req.flash("error"),
+        userId: user._id.toString(),
+        token: req.params.token
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 router.post("/reset", (req, res) => {
   try {
     crypto.randomBytes(32, async (err, buffer) => {
-      if(err) {
-        req.flash("error" , "Что-то пошло не так, повторите попытку позже");
+      if (err) {
+        req.flash("error", "Что-то пошло не так, повторите попытку позже");
         return res.redirect("/auth/reset");
       }
 
       const token = buffer.toString("hex");
-      const candidate = await User.findOne({email: req.body.email});
+      const candidate = await User.findOne({ email: req.body.email });
 
       if (candidate) {
         candidate.resetToken = token;
@@ -114,8 +142,7 @@ router.post("/reset", (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    
   }
-})
+});
 
 module.exports = router;
