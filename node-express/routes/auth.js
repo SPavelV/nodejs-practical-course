@@ -1,14 +1,14 @@
 const { Router } = require("express");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const {validationResult} = require("express-validator/check");
+const { validationResult } = require("express-validator/check");
 const nodemailer = require("nodemailer");
 const sendgrid = require("nodemailer-sendgrid-transport");
 const User = require("../models/user");
 const keys = require("../keys");
 const regEmail = require("../emails/registration");
 const resetEmail = require("../emails/reset");
-const {registerValidators} = require("../utils-helpers/validators");
+const { registerValidators } = require("../utils-helpers/validators");
 const router = Router();
 
 const transporter = nodemailer.createTransport(
@@ -64,30 +64,24 @@ router.post("/login", async (req, res) => {
 
 router.post("/register", registerValidators, async (req, res) => {
   try {
-    const { email, password, confirm, name } = req.body;
-    const candidate = await User.findOne({ email });
+    const { email, password, name } = req.body;
 
     const errors = validationResult(req);
-    if(!errors.isEmpty()) {
+    if (!errors.isEmpty()) {
       req.flash("registerError", errors.array()[0].msg);
       return res.status(422).redirect("/auth/login#register");
     }
 
-    if (candidate) {
-      req.flash("registerError", "Такой email уже занят.");
-      res.redirect("/auth/login#register");
-    } else {
-      const hashPassword = await bcrypt.hash(password, 10);
-      const user = new User({
-        email,
-        name,
-        password: hashPassword,
-        cart: { items: [] },
-      });
-      await user.save();
-      await transporter.sendMail(regEmail(email));
-      res.redirect("/auth/login#login");
-    }
+    const hashPassword = await bcrypt.hash(password, 10);
+    const user = new User({
+      email,
+      name,
+      password: hashPassword,
+      cart: { items: [] },
+    });
+    await user.save();
+    await transporter.sendMail(regEmail(email));
+    res.redirect("/auth/login#login");
   } catch (error) {
     console.log(error);
   }
@@ -110,15 +104,15 @@ router.get("/password/:token", async (req, res) => {
       resetToken: req.params.token,
       resetTokenExp: { $gt: Date.now() },
     });
-    
-    if(!user) {
+
+    if (!user) {
       return res.redirect("/auth/login");
-    } else {  
+    } else {
       res.render("auth/password", {
         title: "Восстановить доступ",
         error: req.flash("error"),
         userId: user._id.toString(),
-        token: req.params.token
+        token: req.params.token,
       });
     }
   } catch (error) {
@@ -153,13 +147,13 @@ router.post("/reset", (req, res) => {
   }
 });
 
-router.post("/password", async(req, res) => {
+router.post("/password", async (req, res) => {
   try {
     const user = await User.findOne({
       _id: req.body.userId,
       resetToken: req.body.token,
       resetTokenExp: req.body.token,
-      resetTokenExp: {$gt: Date.now()}
+      resetTokenExp: { $gt: Date.now() },
     });
 
     if (user) {
@@ -174,8 +168,7 @@ router.post("/password", async(req, res) => {
     }
   } catch (error) {
     console.log(error);
-    
   }
-})
+});
 
 module.exports = router;
