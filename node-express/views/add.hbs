@@ -1,6 +1,10 @@
 <h1>Добавить новый курс</h1>
 
-<form action="/add" method="POST">
+{{#if error}}
+  <p class="alert">{{error}}</p>
+{{/if}}
+
+<form action="/add" method="POST" novalidate>
 
   <div class="input-field">
     <input name="title" id="title" type="text"
@@ -9,7 +13,7 @@
     <span class="helper-text" data-error="Введите название"></span>
   </div>
 
-  <div class="input-field">
+  <div class="input-field">0
     <input name="price" min="1" id="price" type="number"
       class="validate" required>
     <label for="price">Цена курса</label>
