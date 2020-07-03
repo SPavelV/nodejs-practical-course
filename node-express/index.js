@@ -18,6 +18,7 @@ const coursesRoutes = require("./routes/courses");
 const authRoutes = require("./routes/auth");
 const varMiddleWare = require("./middleware/variables");
 const userMiddleWare = require("./middleware/user");
+const errorHandler = require("./middleware/error");
 const keys = require("./keys");
 
 const app = express();
@@ -25,12 +26,12 @@ const hbs = exphbs.create({
   handlebars: allowInsecurePrototypeAccess(Handlebars),
   defaultLayout: "main",
   extname: "hbs",
-  helpers: require("./utils-helpers/hbs-helpers")
+  helpers: require("./utils-helpers/hbs-helpers"),
 });
 
 const store = new MongoStore({
   collection: "sessions",
-  uri: keys.MONGODB_URI
+  uri: keys.MONGODB_URI,
 });
 
 app.engine("hbs", hbs.engine);
@@ -39,12 +40,14 @@ app.set("views", "views");
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
-app.use(session({
-  secret: keys.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store
-}));
+app.use(
+  session({
+    secret: keys.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store,
+  })
+);
 app.use(csrf());
 app.use(flash());
 app.use(varMiddleWare);
@@ -56,6 +59,8 @@ app.use("/courses", coursesRoutes);
 app.use("/card", cardRoutes);
 app.use("/orders", ordersRoutes);
 app.use("/auth", authRoutes);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
