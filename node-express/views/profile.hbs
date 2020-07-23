@@ -5,14 +5,14 @@
   <div class="col s6">
     {{#if user.avatarUrl}}
       <img class="avatar"
-        src="https://avatars3.githubusercontent.com/u/499550?s=460&u=de41ec9325e8a92e281b96a1514a0fd1cd81ad4a&v=4" alt="avatar-{{user.name}}">
+        src="/{{user.avatarUrl}}" alt="avatar-{{user.name}}">
     {{else}}
       <p>Аватара нет</p>
     {{/if}}
   </div>
 
   <div class="col s6">
-    <form action="/profile" method="POST">
+    <form action="/profile" method="POST" enctype="multipart/form-data">
 
       <p>Ваш email: <strong>{{user.email}}</strong></p>
 
