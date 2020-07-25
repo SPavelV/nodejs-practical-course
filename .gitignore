@@ -120,3 +120,5 @@ package-lock.json
 
 node-express/node_modules
 node-express/keys/keys.dev.js
+
+node-mysql/node_modules
