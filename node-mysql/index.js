@@ -12,7 +12,8 @@ app.use(express.json());
 
 app.use(graphqlHTTP({
   schema: schema,
-  rootValue: resolver
+  rootValue: resolver,
+  graphiql: true
 }))
 
 app.use((req, res, next) => {
@@ -21,7 +22,6 @@ app.use((req, res, next) => {
 
 async function start() {
   try {
-    // await sequelize.sync({force: true});
     await sequelize.sync();
     app.listen(PORT);
   } catch (error) {
