@@ -1,3 +1,5 @@
+const Todo = require("../models/todo");
+
 const users = [
   { name: "Igor", age: 30, email: "igor@email.ru" },
   { name: "Elena", age: 23, email: "elen@email.ru" },
@@ -19,7 +21,7 @@ module.exports = {
 
     return arr;
   },
-  addTestUser({ user: {name, email} }) {
+  addTestUser({ user: { name, email } }) {
     const user = {
       name,
       email,
@@ -28,5 +30,12 @@ module.exports = {
     users.push(user);
 
     return user;
+  },
+  async getTodos() {
+    try {
+      return await Todo.findAll();
+    } catch (error) {
+      throw new Error("Fetch todos is not avalibale");
+    }
   },
 };
