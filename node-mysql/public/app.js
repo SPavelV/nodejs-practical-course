@@ -8,6 +8,16 @@ new Vue({
       todos: [],
     };
   },
+  created() {
+    fetch("/api/todo", {
+      method: "get",
+    })
+      .then((res) => res.json())
+      .then((todos) => {
+        this.todos = todos;
+      })
+      .catch((e) => console.log(e));
+  },
   methods: {
     addTodo() {
       const title = this.todoTitle.trim();
@@ -24,7 +34,7 @@ new Vue({
           this.todos.push(todo);
           this.todoTitle = "";
         })
-        .catch(e => console.log(e));
+        .catch((e) => console.log(e));
     },
     removeTodo(id) {
       this.todos = this.todos.filter((t) => t.id !== id);
@@ -41,7 +51,7 @@ new Vue({
         day: "2-digit",
       };
 
-      if(withTime) {
+      if (withTime) {
         options.hour = "2-digit";
         options.minute = "2-digit";
         options.second = "2-digit";
